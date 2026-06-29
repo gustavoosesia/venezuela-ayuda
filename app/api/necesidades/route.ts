@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       .eq("id", voluntarioId)
       .single();
 
-    Promise.all([
+    await Promise.all([
       enviarEmailAsignacion({
         nombreNecesitado: body.nombre,
         telefonoNecesitado: body.telefono,
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ data: necesidad, asignado: true, codigoSeguimiento }, { status: 201 });
   }
 
-  enviarEmailConfirmacionNecesidad({
+  await enviarEmailConfirmacionNecesidad({
     nombreNecesitado: body.nombre,
     emailNecesitado: body.email,
     tipoAyuda: body.tipo_ayuda,
