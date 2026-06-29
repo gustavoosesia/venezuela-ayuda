@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // Mientras no tengas dominio verificado, usa "onboarding@resend.dev"
 // Una vez que verifiques tu dominio en resend.com/domains, cámbialo a:
 // "Venezuela Se Levanta <noreply@tudominio.com>"
-const FROM = "Venezuela Se Levanta <onboarding@resend.dev>";
+const FROM = "Venezuela Se Levanta <noreply@voluntariosve.org>";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 const AVISO_SEGURIDAD = `
