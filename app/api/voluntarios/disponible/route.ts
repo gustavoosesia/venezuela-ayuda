@@ -8,13 +8,15 @@ export async function POST(req: NextRequest) {
 
   if (!email) return NextResponse.json({ error: "Email requerido" }, { status: 400 });
 
-  const { data: voluntario, error } = await supabase
+  const { data: voluntarios, error } = await supabase
     .from("voluntarios")
     .select("id, profesion, estado")
     .eq("email", email.toLowerCase().trim())
-    .single();
+    .limit(1);
 
-  if (error || !voluntario) {
+  const voluntario = voluntarios?.[0] ?? null;
+
+  if (error || !voluntario || !voluntario.id) {
     return NextResponse.json({ error: "No encontramos un voluntario registrado con ese email" }, { status: 404 });
   }
 
