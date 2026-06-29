@@ -23,29 +23,37 @@ export async function encontrarMejorVoluntario(
 ): Promise<string | null> {
   const { data: voluntarios } = await supabase
     .from("voluntarios")
-    .select("id, idiomas, experiencia, pais")
+    .select("id, idiomas, experiencia, pais, ultima_asignacion")
     .eq("estado", "disponible")
     .ilike("profesion", `%${tipo_ayuda}%`);
 
   if (!voluntarios || voluntarios.length === 0) return null;
 
+  const ahora = Date.now();
+
   const scored = voluntarios.map((v) => {
     let score = 0;
 
-    // +3 si habla español (importante para comunicarse con venezolanos)
+    // +3 si habla español
     if (v.idiomas?.includes("Español")) score += 3;
 
-    // +2 si está en Latinoamérica (zona horaria compatible)
+    // +2 si está en Latinoamérica
     const paisLower = (v.pais || "").toLowerCase();
     if (PAISES_LATAM.some((p) => paisLower.includes(p))) score += 2;
 
     // +0 a +3 según experiencia
     score += EXPERIENCIA_PUNTOS[v.experiencia] ?? 0;
 
-    return { id: v.id as string, score };
+    // Tiempo sin recibir caso (ms) — más tiempo esperando = mayor prioridad en empate
+    const esperando = v.ultima_asignacion
+      ? ahora - new Date(v.ultima_asignacion).getTime()
+      : Number.MAX_SAFE_INTEGER;
+
+    return { id: v.id as string, score, esperando };
   });
 
-  scored.sort((a, b) => b.score - a.score);
+  // Primero por score desc, luego por tiempo esperando desc (más tiempo = antes)
+  scored.sort((a, b) => b.score - a.score || b.esperando - a.esperando);
   return scored[0].id;
 }
 
@@ -84,7 +92,7 @@ export async function asignar(
       .eq("id", necesidadId),
     supabase
       .from("voluntarios")
-      .update({ estado: "ocupado" })
+      .update({ estado: "ocupado", ultima_asignacion: new Date().toISOString() })
       .eq("id", voluntarioId),
   ]);
 }
