@@ -69,6 +69,11 @@ export async function enviarEmailAsignacion({
             Cuando termines, márcate disponible en:<br/>
             <a href="${SITE_URL}/voluntario/disponible" style="color:#2563eb">${SITE_URL}/voluntario/disponible</a>
           </p>
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0"/>
+          <p style="color:#9ca3af;font-size:11px;text-align:center">
+            ¿Ya no deseas recibir casos?
+            <a href="${SITE_URL}/voluntario/baja" style="color:#9ca3af">Darse de baja</a>
+          </p>
         </div>
       </div>
     `,
