@@ -7,7 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // Una vez que verifiques tu dominio en resend.com/domains, cámbialo a:
 // "Venezuela Se Levanta <noreply@tudominio.com>"
 const FROM = "Venezuela Se Levanta <noreply@voluntariosve.org>";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const SITE_URL = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://voluntariosve.org";
 
 const AVISO_SEGURIDAD = `
   <div style="background:#fef2f2;border:2px solid #fca5a5;border-radius:8px;padding:16px;margin:20px 0">

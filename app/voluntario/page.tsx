@@ -5,7 +5,7 @@ import { CheckCircle, ArrowLeft, Loader2, Share2, Copy, Check } from "lucide-rea
 import Navbar from "@/components/Navbar";
 import { PROFESIONES } from "@/lib/supabase";
 
-const SITE_URL = "https://venezuelaselevanta.org";
+const SITE_URL = "https://voluntariosve.org";
 const SHARE_TEXT = "Me registré como voluntario para ayudar a Venezuela tras el terremoto. ¡Únete tú también si tienes una profesión u oficio que pueda ayudar! 🇻🇪❤️";
 
 function BotonesCompartir() {
