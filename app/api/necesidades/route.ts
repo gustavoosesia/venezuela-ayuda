@@ -3,6 +3,7 @@ import { getSupabase } from "@/lib/supabase";
 import { encontrarMejorVoluntario, asignar } from "@/lib/matching";
 import { enviarEmailAsignacion, enviarEmailConfirmacionNecesidad } from "@/lib/email";
 import { obtenerIp, rateLimitExcedido, esHoneypot } from "@/lib/antispam";
+import { esTelefonoVenezolano } from "@/lib/validacion";
 
 function generarCodigo(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sin O, 0, I, 1 para evitar confusión
@@ -24,6 +25,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { error: "Demasiadas solicitudes. Espera un minuto e intenta de nuevo." },
       { status: 429 }
+    );
+  }
+
+  if (!esTelefonoVenezolano(body.telefono)) {
+    return NextResponse.json(
+      { error: "Ingresa un número de teléfono venezolano válido" },
+      { status: 400 }
     );
   }
 

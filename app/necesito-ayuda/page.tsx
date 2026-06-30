@@ -4,6 +4,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle, ArrowLeft, Loader2, AlertTriangle, ShieldAlert, Copy, Check } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { ESTADOS_VENEZUELA } from "@/lib/supabase";
+import { esTelefonoVenezolano } from "@/lib/validacion";
 
 const TIPOS_AYUDA = [
   "Psicólogo/a",
@@ -48,7 +50,8 @@ function NecesitoAyudaForm() {
     nombre: "",
     email: "",
     telefono: "",
-    ubicacion: "",
+    estado: "",
+    ciudad: "",
     tipo_ayuda: "",
     descripcion: "",
     urgencia: "media" as "alta" | "media" | "baja",
@@ -63,13 +66,21 @@ function NecesitoAyudaForm() {
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setCargando(true);
     setError("");
+
+    if (!esTelefonoVenezolano(form.telefono)) {
+      setError("Ingresa un número de teléfono venezolano válido (ej: +58 412 000 0000 o 0412-0000000).");
+      return;
+    }
+
+    setCargando(true);
     try {
+      const { estado, ciudad, ...resto } = form;
+      const ubicacion = ciudad.trim() ? `${ciudad.trim()}, ${estado}` : estado;
       const res = await fetch("/api/necesidades", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...resto, ubicacion }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Error al registrar");
@@ -237,10 +248,18 @@ function NecesitoAyudaForm() {
               <Field label="Teléfono / WhatsApp *">
                 <input required value={form.telefono} onChange={(e) => setForm({ ...form, telefono: e.target.value })}
                   placeholder="+58 412 000 0000" className={inputClass} />
+                <p className="text-xs text-gray-400 mt-1">Debe ser un número venezolano (+58)</p>
               </Field>
-              <Field label="Ubicación (estado/ciudad) *">
-                <input required value={form.ubicacion} onChange={(e) => setForm({ ...form, ubicacion: e.target.value })}
-                  placeholder="Ej: Caracas, Miranda" className={inputClass} />
+              <Field label="Estado *">
+                <select required value={form.estado} onChange={(e) => setForm({ ...form, estado: e.target.value })}
+                  className={inputClass}>
+                  <option value="">Seleccionar...</option>
+                  {ESTADOS_VENEZUELA.map((e) => <option key={e}>{e}</option>)}
+                </select>
+              </Field>
+              <Field label="Ciudad o zona (opcional)">
+                <input value={form.ciudad} onChange={(e) => setForm({ ...form, ciudad: e.target.value })}
+                  placeholder="Ej: Maracaibo, Catia" className={inputClass} />
               </Field>
             </div>
           </section>
