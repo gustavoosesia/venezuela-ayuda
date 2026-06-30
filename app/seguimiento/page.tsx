@@ -11,7 +11,7 @@ type Resultado = {
   urgencia: "alta" | "media" | "baja";
   created_at: string;
   codigo_seguimiento: string;
-  voluntario?: { nombre: string; telefono: string; profesion: string } | null;
+  voluntario?: { nombre: string; telefono: string; profesion: string; foto_url?: string } | null;
 };
 
 function linkWhatsapp(telefono: string, mensaje: string): string {
@@ -143,10 +143,20 @@ function SeguimientoForm() {
 
               {resultado.estado !== "pendiente" && resultado.voluntario && (
                 <>
-                  <div className="bg-white border border-gray-200 rounded-xl p-3 mb-3">
-                    <p className="text-xs text-gray-500 mb-0.5">Voluntario asignado</p>
-                    <p className="font-semibold text-gray-800">{resultado.voluntario.nombre}</p>
-                    <p className="text-xs text-gray-500">{resultado.voluntario.profesion}</p>
+                  <div className="bg-white border border-gray-200 rounded-xl p-3 mb-3 flex items-center gap-3">
+                    {resultado.voluntario.foto_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={resultado.voluntario.foto_url}
+                        alt={resultado.voluntario.nombre}
+                        className="w-10 h-10 rounded-full object-cover shrink-0"
+                      />
+                    ) : null}
+                    <div>
+                      <p className="text-xs text-gray-500 mb-0.5">Voluntario asignado</p>
+                      <p className="font-semibold text-gray-800">{resultado.voluntario.nombre}</p>
+                      <p className="text-xs text-gray-500">{resultado.voluntario.profesion}</p>
+                    </div>
                   </div>
                   {resultado.estado === "asignado" && (
                     <a

@@ -200,11 +200,17 @@ function VoluntariosList({
             )}
           </div>
           <div className="grid md:grid-cols-2 gap-2">
-            <div>
-              <p className="font-semibold text-gray-900">{v.nombre}</p>
-              <p className="text-sm text-gray-500">🌍 {v.pais}</p>
-              <p className="text-sm text-gray-500">📞 {v.telefono}</p>
-              <p className="text-sm text-gray-500">✉️ {v.email}</p>
+            <div className="flex items-start gap-3">
+              {v.foto_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={v.foto_url} alt={v.nombre} className="w-12 h-12 rounded-full object-cover shrink-0" />
+              ) : null}
+              <div>
+                <p className="font-semibold text-gray-900">{v.nombre}</p>
+                <p className="text-sm text-gray-500">🌍 {v.pais}</p>
+                <p className="text-sm text-gray-500">📞 {v.telefono}</p>
+                <p className="text-sm text-gray-500">✉️ {v.email}</p>
+              </div>
             </div>
             <div>
               {v.especialidad && <p className="text-sm text-gray-600">Especialidad: {v.especialidad}</p>}

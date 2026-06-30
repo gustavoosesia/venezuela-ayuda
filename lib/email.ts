@@ -142,7 +142,7 @@ export async function enviarEmailConfirmacionNecesidad({
   emailNecesitado?: string;
   tipoAyuda: string;
   codigoSeguimiento: string;
-  voluntario?: { nombre: string; email: string; telefono: string; profesion: string; pais: string } | null;
+  voluntario?: { nombre: string; email: string; telefono: string; profesion: string; pais: string; foto_url?: string } | null;
   asignado: boolean;
 }) {
   if (!emailNecesitado) return;
@@ -153,6 +153,7 @@ export async function enviarEmailConfirmacionNecesidad({
       <p>¡Buenas noticias! Ya encontramos un voluntario para ayudarte.</p>
       <div style="background:#fff;border:1px solid #d1d5db;border-radius:8px;padding:16px;margin:16px 0">
         <p style="margin:0 0 8px;font-weight:600;color:#374151">Tu voluntario asignado:</p>
+        ${voluntario.foto_url ? `<img src="${voluntario.foto_url}" alt="${voluntario.nombre}" width="64" height="64" style="border-radius:50%;object-fit:cover;display:block;margin:0 0 10px" />` : ""}
         <p style="margin:4px 0">👤 <strong>${voluntario.nombre}</strong></p>
         <p style="margin:4px 0">💼 ${voluntario.profesion} — ${voluntario.pais}</p>
         <p style="margin:4px 0">📞 ${voluntario.telefono}</p>

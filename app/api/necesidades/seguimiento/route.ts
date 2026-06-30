@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
   const { data: necesidad, error } = await supabase
     .from("necesidades")
-    .select("estado, tipo_ayuda, urgencia, created_at, codigo_seguimiento, voluntario:voluntarios(nombre, telefono, profesion)")
+    .select("estado, tipo_ayuda, urgencia, created_at, codigo_seguimiento, voluntario:voluntarios(nombre, telefono, profesion, foto_url)")
     .eq("codigo_seguimiento", codigo)
     .single();
 

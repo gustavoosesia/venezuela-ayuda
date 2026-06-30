@@ -76,6 +76,7 @@ export type Voluntario = {
   experiencia: string
   como_puede_ayudar: string
   estado: 'pendiente_aprobacion' | 'disponible' | 'ocupado' | 'inactivo'
+  foto_url?: string
   created_at?: string
 }
 

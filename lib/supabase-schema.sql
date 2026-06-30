@@ -60,3 +60,12 @@ CREATE POLICY "Inserción pública sugerencias" ON sugerencias FOR INSERT WITH C
 
 -- También agregar columna email a necesidades (para notificaciones)
 ALTER TABLE necesidades ADD COLUMN IF NOT EXISTS email TEXT;
+
+-- Foto opcional de perfil del voluntario
+ALTER TABLE voluntarios ADD COLUMN IF NOT EXISTS foto_url TEXT;
+
+-- Bucket público de Storage para las fotos (la subida la hace el backend
+-- con la service_role key, así que no hace falta política de INSERT pública)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('fotos-voluntarios', 'fotos-voluntarios', true)
+ON CONFLICT (id) DO NOTHING;

@@ -47,7 +47,8 @@ export default function PrivacidadPage() {
               <p><strong>Si solicitas ayuda:</strong> nombre, teléfono, email (opcional), ubicación, tipo de ayuda
               que necesitas, nivel de urgencia y la descripción de tu situación que escribes en el formulario.</p>
               <p><strong>Si te registras como voluntario:</strong> nombre, email, teléfono, país, profesión,
-              especialidad, idiomas, disponibilidad, experiencia y la descripción de cómo puedes ayudar.</p>
+              especialidad, idiomas, disponibilidad, experiencia, la descripción de cómo puedes ayudar y,
+              de forma opcional, una foto de perfil que se muestra a la persona que solicita ayuda.</p>
               <p>No solicitamos ni almacenamos datos bancarios, de pago, ni documentos de identidad.</p>
             </Section>
 

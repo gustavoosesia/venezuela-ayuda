@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { CheckCircle, ArrowLeft, Loader2, Share2, Copy, Check, UserPlus, ShieldCheck, Target, Mail, RotateCw } from "lucide-react";
+import { CheckCircle, ArrowLeft, Loader2, Share2, Copy, Check, UserPlus, ShieldCheck, Target, Mail, RotateCw, Camera, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { PROFESIONES } from "@/lib/supabase";
 
@@ -133,10 +133,13 @@ const DISPONIBILIDADES = [
   "Según sea necesario",
 ];
 
+const MAX_FOTO_BYTES = 2 * 1024 * 1024; // 2MB
+
 export default function VoluntarioPage() {
   const [enviado, setEnviado] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
+  const [fotoError, setFotoError] = useState("");
 
   const [form, setForm] = useState({
     nombre: "",
@@ -149,8 +152,32 @@ export default function VoluntarioPage() {
     disponibilidad: "",
     experiencia: "",
     como_puede_ayudar: "",
+    foto_base64: "",
     sitio_web: "", // honeypot — debe quedar vacío
   });
+
+  const handleFoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    setFotoError("");
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setFotoError("Selecciona un archivo de imagen (jpg, png o webp).");
+      return;
+    }
+    if (file.size > MAX_FOTO_BYTES) {
+      setFotoError("La imagen no debe superar 2MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setForm((f) => ({ ...f, foto_base64: reader.result as string }));
+    reader.readAsDataURL(file);
+  };
+
+  const quitarFoto = () => {
+    setForm((f) => ({ ...f, foto_base64: "" }));
+    setFotoError("");
+  };
 
   const toggle = (lang: string) => {
     setForm((f) => ({
@@ -246,6 +273,42 @@ export default function VoluntarioPage() {
 
           <section className="mb-8">
             <h2 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Datos personales</h2>
+
+            <div className="flex items-center gap-4 mb-6">
+              <div className="relative shrink-0">
+                {form.foto_base64 ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={form.foto_base64}
+                      alt="Vista previa"
+                      className="w-16 h-16 rounded-full object-cover border border-gray-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={quitarFoto}
+                      className="absolute -top-1.5 -right-1.5 bg-gray-700 text-white rounded-full p-0.5 hover:bg-gray-900 transition-colors"
+                      aria-label="Quitar foto"
+                    >
+                      <X size={12} />
+                    </button>
+                  </>
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400">
+                    <Camera size={22} />
+                  </div>
+                )}
+              </div>
+              <div>
+                <label className="inline-block text-sm font-medium text-blue-600 hover:text-blue-700 cursor-pointer">
+                  {form.foto_base64 ? "Cambiar foto" : "Agregar foto de perfil (opcional)"}
+                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFoto} className="hidden" />
+                </label>
+                <p className="text-xs text-gray-400 mt-0.5">JPG, PNG o WEBP — máx. 2MB</p>
+                {fotoError && <p className="text-xs text-red-500 mt-0.5">{fotoError}</p>}
+              </div>
+            </div>
+
             <div className="grid md:grid-cols-2 gap-4">
               <Field label="Nombre completo *">
                 <input required value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })}

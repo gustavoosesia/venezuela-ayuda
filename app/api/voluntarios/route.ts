@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { obtenerIp, rateLimitExcedido, esHoneypot } from "@/lib/antispam";
+import { subirFotoVoluntario } from "@/lib/foto";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -16,13 +17,18 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const { foto_base64, ...datos } = body;
+
+  // La foto es opcional: si falla la subida, el registro continúa sin foto.
+  const fotoUrl = foto_base64 ? await subirFotoVoluntario(foto_base64).catch(() => null) : null;
+
   const supabase = getSupabase();
 
   // Los voluntarios nuevos quedan pendientes de revisión y solo reciben casos
   // una vez que un administrador aprueba su registro.
   const { data: voluntario, error } = await supabase
     .from("voluntarios")
-    .insert([{ ...body, estado: "pendiente_aprobacion" }])
+    .insert([{ ...datos, foto_url: fotoUrl, estado: "pendiente_aprobacion" }])
     .select()
     .single();
 

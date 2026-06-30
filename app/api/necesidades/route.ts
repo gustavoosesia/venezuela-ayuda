@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
 
     const { data: voluntario } = await supabase
       .from("voluntarios")
-      .select("nombre, email, telefono, profesion, pais")
+      .select("nombre, email, telefono, profesion, pais, foto_url")
       .eq("id", voluntarioId)
       .single();
 
