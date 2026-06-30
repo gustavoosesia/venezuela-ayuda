@@ -37,9 +37,10 @@ export default function PrivacidadPage() {
             </div>
 
             <p className="text-gray-600 text-sm leading-relaxed mb-8">
-              Venezuela Se Levanta ("la plataforma") conecta a personas afectadas por el terremoto en
-              Venezuela con voluntarios profesionales que ofrecen ayuda gratuita. Esta página explica
-              qué datos recopilamos, para qué los usamos y qué derechos tienes sobre ellos.
+              Venezuela Se Levanta ("la plataforma"), una iniciativa operada por OseanInnova, conecta a
+              personas afectadas por el terremoto en Venezuela con voluntarios profesionales que ofrecen
+              ayuda gratuita. Esta página explica qué datos recopilamos, para qué los usamos y qué derechos
+              tienes sobre ellos.
             </p>
 
             <Section title="1. Qué datos recopilamos">

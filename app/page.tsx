@@ -170,6 +170,7 @@ export default function Home() {
         <p className="flex items-center justify-center gap-2">
           Hecho con <Heart size={14} fill="currentColor" className="text-red-500" /> para Venezuela · 2026
         </p>
+        <p className="mt-2 text-gray-600">Una iniciativa de OseanInnova</p>
         <p className="mt-2 text-gray-600">
           <Link href="/terminos" className="underline hover:text-gray-300 transition-colors">
             Términos de uso
