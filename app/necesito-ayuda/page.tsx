@@ -146,7 +146,7 @@ function NecesitoAyudaForm() {
                   <a
                     href={linkWhatsapp(
                       resultado.voluntario.telefono,
-                      `Hola ${resultado.voluntario.nombre}, soy ${form.nombre}. Me asignaron contigo en Venezuela Se Levanta para ${form.tipo_ayuda}.`
+                      `Hola ${resultado.voluntario.nombre}, soy ${form.nombre}. Me asignaron contigo en Venezuela Se Levanta para ${form.tipo_ayuda}. ⚠️ Recuerda: es una consulta gratuita, no compartas datos bancarios ni aceptes cobros.`
                     )}
                     target="_blank"
                     rel="noopener noreferrer"

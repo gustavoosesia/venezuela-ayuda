@@ -76,7 +76,7 @@ export async function enviarEmailAsignacion({
             ${descripcion ? `<p style="margin:12px 0 0;padding-top:12px;border-top:1px solid #e5e7eb;color:#374151"><strong>Descripción de la situación:</strong><br/>${descripcion}</p>` : ""}
           </div>
           <div style="text-align:center;margin:20px 0">
-            <a href="${linkWhatsapp(telefonoNecesitado, `Hola ${nombreNecesitado}, soy ${voluntario.nombre} de Venezuela Se Levanta. Voy a ayudarte con ${tipoAyuda}.`)}"
+            <a href="${linkWhatsapp(telefonoNecesitado, `Hola ${nombreNecesitado}, soy ${voluntario.nombre} de Venezuela Se Levanta. Voy a ayudarte con ${tipoAyuda}. ⚠️ Recuerda: es una consulta gratuita, no compartas datos bancarios ni aceptes cobros.`)}"
                style="display:inline-block;background:#25D366;color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:24px;font-size:14px">
               📱 Contactar por WhatsApp
             </a>
@@ -159,7 +159,7 @@ export async function enviarEmailConfirmacionNecesidad({
         <p style="margin:4px 0">✉️ ${voluntario.email}</p>
       </div>
       <div style="text-align:center;margin:20px 0">
-        <a href="${linkWhatsapp(voluntario.telefono, `Hola ${voluntario.nombre}, soy ${nombreNecesitado}. Me asignaron contigo en Venezuela Se Levanta para ${tipoAyuda}.`)}"
+        <a href="${linkWhatsapp(voluntario.telefono, `Hola ${voluntario.nombre}, soy ${nombreNecesitado}. Me asignaron contigo en Venezuela Se Levanta para ${tipoAyuda}. ⚠️ Recuerda: es una consulta gratuita, no compartas datos bancarios ni aceptes cobros.`)}"
            style="display:inline-block;background:#25D366;color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:24px;font-size:14px">
           📱 Escribirle por WhatsApp
         </a>

@@ -152,7 +152,7 @@ function SeguimientoForm() {
                     <a
                       href={linkWhatsapp(
                         resultado.voluntario.telefono,
-                        `Hola ${resultado.voluntario.nombre}, te escribo por mi caso ${resultado.codigo_seguimiento} de Venezuela Se Levanta.`
+                        `Hola ${resultado.voluntario.nombre}, te escribo por mi caso ${resultado.codigo_seguimiento} de Venezuela Se Levanta. ⚠️ Recuerda: es una consulta gratuita, no compartas datos bancarios ni aceptes cobros.`
                       )}
                       target="_blank"
                       rel="noopener noreferrer"
