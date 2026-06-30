@@ -268,6 +268,12 @@ export default function VoluntarioPage() {
           {form.idiomas.length === 0 && (
             <p className="text-xs text-red-500 text-center mt-2">Selecciona al menos un idioma</p>
           )}
+          <p className="text-xs text-gray-400 text-center mt-3">
+            Al registrarte aceptas nuestros{" "}
+            <Link href="/terminos" className="underline hover:text-gray-600">Términos de Uso</Link>
+            {" "}y{" "}
+            <Link href="/privacidad" className="underline hover:text-gray-600">Política de Privacidad</Link>.
+          </p>
         </form>
       </main>
     </div>

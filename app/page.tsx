@@ -171,6 +171,15 @@ export default function Home() {
           Hecho con <Heart size={14} fill="currentColor" className="text-red-500" /> para Venezuela · 2026
         </p>
         <p className="mt-2 text-gray-600">
+          <Link href="/terminos" className="underline hover:text-gray-300 transition-colors">
+            Términos de uso
+          </Link>
+          {" · "}
+          <Link href="/privacidad" className="underline hover:text-gray-300 transition-colors">
+            Privacidad
+          </Link>
+        </p>
+        <p className="mt-2 text-gray-600">
           ¿Eres administrador?{" "}
           <Link href="/admin" className="underline hover:text-gray-300 transition-colors">
             Acceder al panel

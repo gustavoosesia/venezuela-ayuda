@@ -266,6 +266,12 @@ function NecesitoAyudaForm() {
             className="w-full bg-red-700 text-white py-4 rounded-full font-bold text-lg hover:bg-red-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
             {cargando ? <><Loader2 size={20} className="animate-spin" /> Enviando solicitud...</> : "Enviar mi solicitud de ayuda"}
           </button>
+          <p className="text-xs text-gray-400 text-center mt-3">
+            Al enviar aceptas nuestros{" "}
+            <Link href="/terminos" className="underline hover:text-gray-600">Términos de Uso</Link>
+            {" "}y{" "}
+            <Link href="/privacidad" className="underline hover:text-gray-600">Política de Privacidad</Link>.
+          </p>
         </form>
       </main>
     </div>
