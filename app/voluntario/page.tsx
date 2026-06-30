@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { CheckCircle, ArrowLeft, Loader2, Share2, Copy, Check, UserPlus, ShieldCheck, Target, Mail } from "lucide-react";
+import { CheckCircle, ArrowLeft, Loader2, Share2, Copy, Check, UserPlus, ShieldCheck, Target, Mail, RotateCw } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { PROFESIONES } from "@/lib/supabase";
 
@@ -86,6 +86,12 @@ const PASOS = [
     titulo: "Te avisamos y coordinas",
     texto: "Recibes los datos de contacto por correo y puedes escribir directo por WhatsApp.",
   },
+  {
+    icono: RotateCw,
+    titulo: "Te marcas disponible de nuevo",
+    texto: "Al recibir un caso quedas ocupado. Cuando termines de ayudar, debes marcarte disponible otra vez para poder recibir una próxima asignación.",
+    link: "/voluntario/disponible",
+  },
 ];
 
 function ComoFunciona() {
@@ -104,6 +110,11 @@ function ComoFunciona() {
                   <p.icono size={14} className="text-blue-600" /> {p.titulo}
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{p.texto}</p>
+                {"link" in p && p.link && (
+                  <Link href={p.link} className="text-xs text-blue-600 underline hover:text-blue-800">
+                    Marcarme disponible
+                  </Link>
+                )}
               </div>
             </div>
           ))}

@@ -42,7 +42,7 @@ export default function TerminosPage() {
             </p>
 
             <Section title="1. Qué es la plataforma">
-              <p>Venezuela Se Levanta es una iniciativa de OseanInnova: un servicio gratuito que conecta a
+              <p>Venezuela Se Levanta es una iniciativa de OseanInnova LLC: un servicio gratuito que conecta a
               personas afectadas por el terremoto en Venezuela con voluntarios profesionales que ofrecen su
               tiempo y conocimiento de forma voluntaria.</p>
               <p>La plataforma actúa únicamente como intermediaria de contacto. No empleamos, supervisamos
