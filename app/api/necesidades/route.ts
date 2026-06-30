@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { encontrarMejorVoluntario, asignar } from "@/lib/matching";
 import { enviarEmailAsignacion, enviarEmailConfirmacionNecesidad } from "@/lib/email";
+import { obtenerIp, rateLimitExcedido, esHoneypot } from "@/lib/antispam";
 
 function generarCodigo(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sin O, 0, I, 1 para evitar confusión
@@ -13,9 +14,20 @@ function generarCodigo(): string {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = getSupabase();
   const body = await req.json();
 
+  if (esHoneypot(body)) {
+    return NextResponse.json({ error: "Solicitud inválida" }, { status: 400 });
+  }
+
+  if (rateLimitExcedido(obtenerIp(req))) {
+    return NextResponse.json(
+      { error: "Demasiadas solicitudes. Espera un minuto e intenta de nuevo." },
+      { status: 429 }
+    );
+  }
+
+  const supabase = getSupabase();
   const codigoSeguimiento = generarCodigo();
 
   const { data: necesidad, error } = await supabase

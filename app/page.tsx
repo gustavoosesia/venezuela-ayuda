@@ -172,6 +172,10 @@ export default function Home() {
         </p>
         <p className="mt-2 text-gray-600">Una iniciativa de OseanInnova</p>
         <p className="mt-2 text-gray-600">
+          <Link href="/seguimiento" className="underline hover:text-gray-300 transition-colors">
+            Seguimiento de caso
+          </Link>
+          {" · "}
           <Link href="/terminos" className="underline hover:text-gray-300 transition-colors">
             Términos de uso
           </Link>

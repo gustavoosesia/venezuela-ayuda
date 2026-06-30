@@ -52,6 +52,7 @@ function NecesitoAyudaForm() {
     tipo_ayuda: "",
     descripcion: "",
     urgencia: "media" as "alta" | "media" | "baja",
+    sitio_web: "", // honeypot — debe quedar vacío
   });
 
   // Pre-selecciona el tipo de ayuda si viene de la landing
@@ -114,6 +115,12 @@ function NecesitoAyudaForm() {
               <p className="text-xs text-blue-500 mt-2">
                 {form.email ? "También lo recibirás por correo." : "Guárdalo — lo necesitarás para hacer seguimiento."}
               </p>
+              <Link
+                href={`/seguimiento?codigo=${resultado?.codigoSeguimiento}`}
+                className="inline-block text-xs text-blue-600 underline hover:text-blue-800 mt-2"
+              >
+                Consultar el estado de mi caso más tarde
+              </Link>
             </div>
 
             {/* Estado de asignación */}
@@ -197,6 +204,16 @@ function NecesitoAyudaForm() {
 
       <main className="flex-1 py-12 px-4 bg-gray-50">
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <input
+            type="text"
+            name="sitio_web"
+            value={form.sitio_web}
+            onChange={(e) => setForm({ ...form, sitio_web: e.target.value })}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="absolute -left-[9999px] opacity-0 h-0 w-0"
+          />
 
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex gap-3 text-sm text-blue-800">
             <AlertTriangle size={18} className="shrink-0 mt-0.5 text-blue-600" />

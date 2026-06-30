@@ -138,6 +138,7 @@ export default function VoluntarioPage() {
     disponibilidad: "",
     experiencia: "",
     como_puede_ayudar: "",
+    sitio_web: "", // honeypot — debe quedar vacío
   });
 
   const toggle = (lang: string) => {
@@ -221,6 +222,17 @@ export default function VoluntarioPage() {
       <main className="flex-1 py-12 px-4 bg-gray-50">
         <ComoFunciona />
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <input
+            type="text"
+            name="sitio_web"
+            value={form.sitio_web}
+            onChange={(e) => setForm({ ...form, sitio_web: e.target.value })}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="absolute -left-[9999px] opacity-0 h-0 w-0"
+          />
+
           <section className="mb-8">
             <h2 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Datos personales</h2>
             <div className="grid md:grid-cols-2 gap-4">

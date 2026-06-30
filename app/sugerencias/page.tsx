@@ -20,6 +20,7 @@ export default function SugerenciasPage() {
     email: "",
     tipo: "",
     mensaje: "",
+    sitio_web: "", // honeypot — debe quedar vacío
   });
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -82,6 +83,16 @@ export default function SugerenciasPage() {
 
       <main className="flex-1 py-12 px-4 bg-gray-50">
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+          <input
+            type="text"
+            name="sitio_web"
+            value={form.sitio_web}
+            onChange={(e) => setForm({ ...form, sitio_web: e.target.value })}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="absolute -left-[9999px] opacity-0 h-0 w-0"
+          />
 
           <section className="mb-8">
             <h2 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">¿Qué tipo de comentario es?</h2>
