@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { CheckCircle, ArrowLeft, Loader2, Share2, Copy, Check } from "lucide-react";
+import { CheckCircle, ArrowLeft, Loader2, Share2, Copy, Check, UserPlus, ShieldCheck, Target, Mail } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { PROFESIONES } from "@/lib/supabase";
 
@@ -61,6 +61,54 @@ function BotonesCompartir() {
         className="w-full flex items-center justify-center gap-2 border border-gray-300 text-gray-600 text-xs py-2 rounded-lg hover:bg-gray-50 transition-colors">
         {copiado ? <><Check size={12} className="text-green-500" /> ¡Enlace copiado!</> : <><Copy size={12} /> Copiar enlace</>}
       </button>
+    </div>
+  );
+}
+
+const PASOS = [
+  {
+    icono: UserPlus,
+    titulo: "Te registras",
+    texto: "Completa tus datos, profesión y cómo puedes ayudar.",
+  },
+  {
+    icono: ShieldCheck,
+    titulo: "Revisamos tu perfil",
+    texto: "Un administrador valida tu registro antes de activarlo, por seguridad de quienes piden ayuda.",
+  },
+  {
+    icono: Target,
+    titulo: "Te asignamos casos",
+    texto: "Según tu profesión, idioma y disponibilidad. Si tu oficio requiere presencia física (electricista, mecánico, etc.), solo recibirás casos en Venezuela si resides allí.",
+  },
+  {
+    icono: Mail,
+    titulo: "Te avisamos y coordinas",
+    texto: "Recibes los datos de contacto por correo y puedes escribir directo por WhatsApp.",
+  },
+];
+
+function ComoFunciona() {
+  return (
+    <div className="max-w-2xl mx-auto px-4 mb-8">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h2 className="text-base font-bold text-gray-900 mb-4">¿Cómo funciona?</h2>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {PASOS.map((p, i) => (
+            <div key={p.titulo} className="flex gap-3">
+              <div className="shrink-0 bg-blue-100 text-blue-700 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
+                {i + 1}
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800 text-sm flex items-center gap-1.5">
+                  <p.icono size={14} className="text-blue-600" /> {p.titulo}
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{p.texto}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -171,6 +219,7 @@ export default function VoluntarioPage() {
       </div>
 
       <main className="flex-1 py-12 px-4 bg-gray-50">
+        <ComoFunciona />
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
           <section className="mb-8">
             <h2 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b">Datos personales</h2>
