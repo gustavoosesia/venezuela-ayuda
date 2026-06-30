@@ -35,12 +35,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const { sitio_web, ...datos } = body;
+  void sitio_web; // honeypot — ya validado arriba, no es una columna real
+
   const supabase = getSupabase();
   const codigoSeguimiento = generarCodigo();
 
   const { data: necesidad, error } = await supabase
     .from("necesidades")
-    .insert([{ ...body, estado: "pendiente", codigo_seguimiento: codigoSeguimiento }])
+    .insert([{ ...datos, estado: "pendiente", codigo_seguimiento: codigoSeguimiento }])
     .select()
     .single();
 

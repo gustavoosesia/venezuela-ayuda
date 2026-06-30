@@ -16,11 +16,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const { sitio_web, ...datos } = body;
+  void sitio_web; // honeypot — ya validado arriba, no es una columna real
+
   const supabase = getSupabase();
 
   const { data, error } = await supabase
     .from("sugerencias")
-    .insert([body])
+    .insert([datos])
     .select()
     .single();
 

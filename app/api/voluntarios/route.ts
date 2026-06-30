@@ -17,7 +17,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { foto_base64, ...datos } = body;
+  const { foto_base64, sitio_web, ...datos } = body;
+  void sitio_web; // honeypot — ya validado arriba, no es una columna real
 
   // La foto es opcional: si falla la subida, el registro continúa sin foto.
   const fotoUrl = foto_base64 ? await subirFotoVoluntario(foto_base64).catch(() => null) : null;
