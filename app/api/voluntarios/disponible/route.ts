@@ -25,6 +25,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ mensaje: "Ya estás marcado como disponible" });
   }
 
+  if (voluntario.estado === "pendiente_aprobacion") {
+    return NextResponse.json(
+      { error: "Tu registro aún está pendiente de aprobación por un administrador" },
+      { status: 403 }
+    );
+  }
+
   // Marcar disponible
   await supabase
     .from("voluntarios")
@@ -32,7 +39,7 @@ export async function POST(req: NextRequest) {
     .eq("id", voluntario.id);
 
   // Buscar caso pendiente más urgente que coincida
-  const necesidadId = await encontrarNecesidadPendiente(supabase, voluntario.profesion);
+  const necesidadId = await encontrarNecesidadPendiente(supabase, voluntario.profesion, voluntario.pais);
   if (necesidadId) {
     await asignar(supabase, necesidadId, voluntario.id);
 

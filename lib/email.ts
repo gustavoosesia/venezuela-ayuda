@@ -9,6 +9,11 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = "Venezuela Se Levanta <noreply@voluntariosve.org>";
 const SITE_URL = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://voluntariosve.org";
 
+function linkWhatsapp(telefono: string, mensaje: string): string {
+  const digitos = (telefono || "").replace(/[^\d]/g, "");
+  return `https://wa.me/${digitos}?text=${encodeURIComponent(mensaje)}`;
+}
+
 const AVISO_SEGURIDAD = `
   <div style="background:#fef2f2;border:2px solid #fca5a5;border-radius:8px;padding:16px;margin:20px 0">
     <p style="margin:0 0 8px;font-weight:700;color:#991b1b;font-size:15px">🔒 AVISO DE SEGURIDAD IMPORTANTE</p>
@@ -70,6 +75,12 @@ export async function enviarEmailAsignacion({
             <p style="margin:4px 0">🆘 Necesita: ${tipoAyuda}</p>
             ${descripcion ? `<p style="margin:12px 0 0;padding-top:12px;border-top:1px solid #e5e7eb;color:#374151"><strong>Descripción de la situación:</strong><br/>${descripcion}</p>` : ""}
           </div>
+          <div style="text-align:center;margin:20px 0">
+            <a href="${linkWhatsapp(telefonoNecesitado, `Hola ${nombreNecesitado}, soy ${voluntario.nombre} de Venezuela Se Levanta. Voy a ayudarte con ${tipoAyuda}.`)}"
+               style="display:inline-block;background:#25D366;color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:24px;font-size:14px">
+              📱 Contactar por WhatsApp
+            </a>
+          </div>
           <p>Por favor, contáctale lo antes posible. Recuerda que tu ayuda es <strong>voluntaria y gratuita</strong>.</p>
           <p style="margin-top:24px;color:#6b7280;font-size:13px">
             Cuando termines, márcate disponible en:<br/>
@@ -79,6 +90,39 @@ export async function enviarEmailAsignacion({
           <p style="color:#9ca3af;font-size:11px;text-align:center">
             ¿Ya no deseas recibir casos?
             <a href="${SITE_URL}/voluntario/baja" style="color:#9ca3af">Darse de baja</a>
+          </p>
+        </div>
+      </div>
+    `,
+  });
+}
+
+export async function enviarEmailAprobacionVoluntario({
+  nombre,
+  email,
+}: {
+  nombre: string;
+  email: string;
+}) {
+  if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === "your_resend_api_key_here") return;
+
+  await resend.emails.send({
+    from: FROM,
+    to: email,
+    subject: "¡Tu registro fue aprobado! — Venezuela Se Levanta",
+    html: `
+      <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#1a1a1a">
+        <div style="background:#003893;padding:32px 24px;border-radius:12px 12px 0 0">
+          <h1 style="color:#fff;margin:0;font-size:22px">✅ ¡Ya estás activo!</h1>
+          <p style="color:#93b4f0;margin:8px 0 0">Venezuela Se Levanta</p>
+        </div>
+        <div style="background:#f9fafb;padding:24px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px">
+          <p>Hola <strong>${nombre}</strong>,</p>
+          <p>Revisamos tu registro y ya está aprobado. A partir de ahora puedes recibir casos que coincidan con tu perfil.</p>
+          <p>Te avisaremos por correo en cuanto tengas un caso asignado. ¡Gracias por sumarte!</p>
+          <p style="margin-top:24px;color:#6b7280;font-size:13px">
+            ¿Ya no deseas recibir casos? Puedes darte de baja en:<br/>
+            <a href="${SITE_URL}/voluntario/baja" style="color:#2563eb">${SITE_URL}/voluntario/baja</a>
           </p>
         </div>
       </div>
@@ -113,6 +157,12 @@ export async function enviarEmailConfirmacionNecesidad({
         <p style="margin:4px 0">💼 ${voluntario.profesion} — ${voluntario.pais}</p>
         <p style="margin:4px 0">📞 ${voluntario.telefono}</p>
         <p style="margin:4px 0">✉️ ${voluntario.email}</p>
+      </div>
+      <div style="text-align:center;margin:20px 0">
+        <a href="${linkWhatsapp(voluntario.telefono, `Hola ${voluntario.nombre}, soy ${nombreNecesitado}. Me asignaron contigo en Venezuela Se Levanta para ${tipoAyuda}.`)}"
+           style="display:inline-block;background:#25D366;color:#fff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:24px;font-size:14px">
+          📱 Escribirle por WhatsApp
+        </a>
       </div>
       <p>Pronto recibirás contacto directo de su parte.</p>
     `

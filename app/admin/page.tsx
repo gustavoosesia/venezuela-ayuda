@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Users, HandHeart, Clock, CheckCircle, RefreshCw,
-  AlertTriangle, Zap, CircleCheck, LogOut,
+  AlertTriangle, Zap, CircleCheck, LogOut, UserCheck, UserX, UserCog,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { getSupabaseBrowser } from "@/lib/supabase-browser";
@@ -22,9 +22,16 @@ const estadoNecColor: Record<string, string> = {
   completado: "bg-green-100 text-green-700",
 };
 const estadoVolColor: Record<string, string> = {
+  pendiente_aprobacion: "bg-orange-100 text-orange-700",
   disponible: "bg-green-100 text-green-700",
   ocupado: "bg-amber-100 text-amber-700",
   inactivo: "bg-gray-100 text-gray-500",
+};
+const estadoVolEmoji: Record<string, string> = {
+  pendiente_aprobacion: "🟠",
+  disponible: "🟢",
+  ocupado: "🟡",
+  inactivo: "⚫",
 };
 
 // ── Subcomponentes ────────────────────────────────────────────
@@ -130,23 +137,67 @@ function NecesidadesList({
   );
 }
 
-function VoluntariosList({ voluntarios }: { voluntarios: Voluntario[] }) {
-  if (voluntarios.length === 0) return <EmptyState mensaje="No hay voluntarios registrados aún." />;
+function VoluntariosList({
+  voluntarios,
+  filtroEstado,
+  onAprobar,
+  onRechazar,
+}: {
+  voluntarios: Voluntario[];
+  filtroEstado: string;
+  onAprobar: (id: string) => void;
+  onRechazar: (id: string) => void;
+}) {
+  const filtrados =
+    filtroEstado === "todos" ? voluntarios : voluntarios.filter((v) => v.estado === filtroEstado);
+
+  if (filtrados.length === 0) {
+    const msg =
+      filtroEstado === "todos"
+        ? "No hay voluntarios registrados aún."
+        : `No hay voluntarios en estado "${filtroEstado}" aún.`;
+    return <EmptyState mensaje={msg} />;
+  }
 
   return (
     <div className="space-y-3 pb-12">
-      {voluntarios.map((v) => (
-        <div key={v.id} className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-          <div className="flex flex-wrap gap-2 mb-3">
-            <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${estadoVolColor[v.estado]}`}>
-              {v.estado === "disponible" ? "🟢" : v.estado === "ocupado" ? "🟡" : "⚫"} {v.estado}
-            </span>
-            <span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium">
-              {v.profesion}
-            </span>
-            {v.idiomas?.map((l) => (
-              <span key={l} className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">{l}</span>
-            ))}
+      {filtrados.map((v) => (
+        <div
+          key={v.id}
+          className={`bg-white rounded-xl border p-5 shadow-sm ${
+            v.estado === "pendiente_aprobacion" ? "border-orange-200" : "border-gray-100"
+          }`}
+        >
+          <div className="flex flex-wrap gap-2 mb-3 justify-between items-start">
+            <div className="flex flex-wrap gap-2">
+              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${estadoVolColor[v.estado]}`}>
+                {estadoVolEmoji[v.estado]} {v.estado === "pendiente_aprobacion" ? "pendiente de aprobación" : v.estado}
+              </span>
+              <span className="text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 font-medium">
+                {v.profesion}
+              </span>
+              {v.idiomas?.map((l) => (
+                <span key={l} className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">{l}</span>
+              ))}
+            </div>
+            {v.estado === "pendiente_aprobacion" && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => onAprobar(v.id!)}
+                  className="flex items-center gap-1.5 text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-full transition-colors"
+                >
+                  <UserCheck size={12} />
+                  Aprobar
+                </button>
+                <button
+                  onClick={() => onRechazar(v.id!)}
+                  className="flex items-center gap-1.5 text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-full transition-colors"
+                >
+                  <UserX size={12} />
+                  Rechazar
+                </button>
+              </div>
+            )}
           </div>
           <div className="grid md:grid-cols-2 gap-2">
             <div>
@@ -180,6 +231,7 @@ function VoluntariosList({ voluntarios }: { voluntarios: Voluntario[] }) {
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>("necesidades");
   const [filtroEstado, setFiltroEstado] = useState<string>("pendiente");
+  const [filtroVoluntario, setFiltroVoluntario] = useState<string>("pendiente_aprobacion");
   const [necesidades, setNecesidades] = useState<Necesidad[]>([]);
   const [voluntarios, setVoluntarios] = useState<Voluntario[]>([]);
   const [cargando, setCargando] = useState(true);
@@ -225,9 +277,20 @@ export default function AdminPage() {
     cargar();
   };
 
+  const aprobarVoluntario = async (id: string) => {
+    await fetch(`/api/voluntarios/${id}/aprobar`, { method: "POST" });
+    cargar();
+  };
+
+  const rechazarVoluntario = async (id: string) => {
+    await fetch(`/api/voluntarios/${id}/rechazar`, { method: "POST" });
+    cargar();
+  };
+
   const stats = {
     totalVoluntarios: voluntarios.length,
     disponibles: voluntarios.filter((v) => v.estado === "disponible").length,
+    porAprobar: voluntarios.filter((v) => v.estado === "pendiente_aprobacion").length,
     pendientes: necesidades.filter((n) => n.estado === "pendiente").length,
     asignados: necesidades.filter((n) => n.estado === "asignado").length,
     completados: necesidades.filter((n) => n.estado === "completado").length,
@@ -238,6 +301,13 @@ export default function AdminPage() {
     { valor: "asignado",   label: "Asignados",   badge: stats.asignados,       color: "bg-blue-100 text-blue-800 border-blue-300" },
     { valor: "completado", label: "Completados", badge: stats.completados,     color: "bg-green-100 text-green-800 border-green-300" },
     { valor: "todos",      label: "Todos",       badge: necesidades.length,    color: "bg-gray-100 text-gray-700 border-gray-300" },
+  ];
+
+  const FILTROS_VOL = [
+    { valor: "pendiente_aprobacion", label: "Por aprobar", badge: stats.porAprobar,            color: "bg-orange-100 text-orange-800 border-orange-300" },
+    { valor: "disponible",           label: "Disponibles", badge: stats.disponibles,            color: "bg-green-100 text-green-800 border-green-300" },
+    { valor: "ocupado",              label: "Ocupados",    badge: voluntarios.filter((v) => v.estado === "ocupado").length, color: "bg-amber-100 text-amber-800 border-amber-300" },
+    { valor: "todos",                label: "Todos",       badge: voluntarios.length,            color: "bg-gray-100 text-gray-700 border-gray-300" },
   ];
 
   return (
@@ -283,9 +353,10 @@ export default function AdminPage() {
 
       {/* Stats */}
       <div className="max-w-6xl mx-auto px-4 -mt-4">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
           {[
             { label: "Total voluntarios", valor: stats.totalVoluntarios, icono: <HandHeart size={16} />, color: "text-blue-600" },
+            { label: "Por aprobar",       valor: stats.porAprobar,       icono: <UserCog size={16} />,     color: "text-orange-600" },
             { label: "Disponibles",       valor: stats.disponibles,      icono: <CheckCircle size={16} />, color: "text-green-600" },
             { label: "Pendientes",        valor: stats.pendientes,       icono: <Clock size={16} />,       color: "text-amber-600" },
             { label: "Asignados",         valor: stats.asignados,        icono: <Users size={16} />,       color: "text-purple-600" },
@@ -320,6 +391,9 @@ export default function AdminPage() {
               className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${tab === "voluntarios" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"}`}
             >
               Voluntarios
+              {stats.porAprobar > 0 && (
+                <span className="ml-2 bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full">{stats.porAprobar}</span>
+              )}
             </button>
           </div>
 
@@ -343,6 +417,27 @@ export default function AdminPage() {
               ))}
             </div>
           )}
+
+          {tab === "voluntarios" && (
+            <div className="flex gap-2 flex-wrap">
+              {FILTROS_VOL.map((f) => (
+                <button
+                  key={f.valor}
+                  onClick={() => setFiltroVoluntario(f.valor)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all
+                    ${filtroVoluntario === f.valor
+                      ? `${f.color} ring-2 ring-offset-1 ring-current`
+                      : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
+                    }`}
+                >
+                  {f.label}
+                  <span className={`px-1.5 py-0.5 rounded-full font-bold ${filtroVoluntario === f.valor ? "bg-white/60" : "bg-gray-100"}`}>
+                    {f.badge}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {cargando ? (
@@ -357,7 +452,12 @@ export default function AdminPage() {
             onCompletar={completarCaso}
           />
         ) : (
-          <VoluntariosList voluntarios={voluntarios} />
+          <VoluntariosList
+            voluntarios={voluntarios}
+            filtroEstado={filtroVoluntario}
+            onAprobar={aprobarVoluntario}
+            onRechazar={rechazarVoluntario}
+          />
         )}
       </div>
     </div>

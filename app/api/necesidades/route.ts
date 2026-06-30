@@ -57,7 +57,12 @@ export async function POST(req: NextRequest) {
       }),
     ]).catch(() => {});
 
-    return NextResponse.json({ data: necesidad, asignado: true, codigoSeguimiento }, { status: 201 });
+    return NextResponse.json({
+      data: necesidad,
+      asignado: true,
+      codigoSeguimiento,
+      voluntario: voluntario ? { nombre: voluntario.nombre, telefono: voluntario.telefono } : undefined,
+    }, { status: 201 });
   }
 
   await enviarEmailConfirmacionNecesidad({

@@ -132,8 +132,9 @@ export default function VoluntarioPage() {
             <CheckCircle className="text-green-500 mx-auto mb-6" size={64} />
             <h1 className="text-3xl font-bold text-gray-900 mb-4">¡Gracias por unirte!</h1>
             <p className="text-gray-600 mb-6 leading-relaxed">
-              Tu registro fue exitoso. Cuando alguien necesite tu perfil, te contactaremos
-              directamente. Eres parte del cambio que Venezuela necesita.
+              Tu registro fue exitoso. Por seguridad, un administrador revisará tu perfil antes
+              de activarlo. En cuanto sea aprobado, podrás recibir casos. Eres parte del cambio
+              que Venezuela necesita.
             </p>
             <div className="flex flex-col gap-4">
               <BotonesCompartir />

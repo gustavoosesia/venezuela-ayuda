@@ -16,6 +16,21 @@ const EXPERIENCIA_PUNTOS: Record<string, number> = {
   "Menos de 1 año": 0,
 };
 
+// Profesiones que requieren presencia física y no pueden ayudar a distancia
+const PROFESIONES_PRESENCIALES = [
+  "dentista", "mecánico", "mecanico", "electricista", "plomero",
+  "bombero", "paramédico", "paramedico", "ingeniero/a civil", "arquitecto",
+];
+
+function requierePresencia(tipoAyuda: string): boolean {
+  const t = (tipoAyuda || "").toLowerCase();
+  return PROFESIONES_PRESENCIALES.some((p) => t.includes(p));
+}
+
+function voluntarioEnVenezuela(pais: string): boolean {
+  return (pais || "").toLowerCase().includes("venezuela");
+}
+
 // Dado un tipo de ayuda, encuentra el mejor voluntario disponible con puntuación
 export async function encontrarMejorVoluntario(
   supabase: SupabaseClient,
@@ -29,9 +44,16 @@ export async function encontrarMejorVoluntario(
 
   if (!voluntarios || voluntarios.length === 0) return null;
 
+  // Si la ayuda requiere presencia física, descartar voluntarios fuera de Venezuela
+  const candidatos = requierePresencia(tipo_ayuda)
+    ? voluntarios.filter((v) => voluntarioEnVenezuela(v.pais))
+    : voluntarios;
+
+  if (candidatos.length === 0) return null;
+
   const ahora = Date.now();
 
-  const scored = voluntarios.map((v) => {
+  const scored = candidatos.map((v) => {
     let score = 0;
 
     // +3 si habla español
@@ -57,26 +79,36 @@ export async function encontrarMejorVoluntario(
   return scored[0].id;
 }
 
-// Dado un voluntario recién registrado, encuentra el caso pendiente más urgente que coincida
+// Dado un voluntario recién disponible, encuentra el caso pendiente más urgente que coincida.
+// Si se indica el país del voluntario, se descartan casos que requieren presencia física
+// cuando el voluntario no está en Venezuela.
 export async function encontrarNecesidadPendiente(
   supabase: SupabaseClient,
-  profesion: string
+  profesion: string,
+  paisVoluntario?: string
 ): Promise<string | null> {
   const { data } = await supabase
     .from("necesidades")
-    .select("id, urgencia")
+    .select("id, urgencia, tipo_ayuda")
     .eq("estado", "pendiente")
     .ilike("tipo_ayuda", `%${profesion}%`);
 
   if (!data || data.length === 0) return null;
 
+  const candidatas =
+    paisVoluntario && !voluntarioEnVenezuela(paisVoluntario)
+      ? data.filter((d) => !requierePresencia(d.tipo_ayuda))
+      : data;
+
+  if (candidatas.length === 0) return null;
+
   // Ordenar: alta → media → baja
-  data.sort(
+  candidatas.sort(
     (a, b) =>
       (URGENCIA_ORDEN[a.urgencia] ?? 99) - (URGENCIA_ORDEN[b.urgencia] ?? 99)
   );
 
-  return data[0].id;
+  return candidatas[0].id;
 }
 
 // Ejecuta la asignación entre una necesidad y un voluntario

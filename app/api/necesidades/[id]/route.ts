@@ -37,7 +37,8 @@ export async function PATCH(
       if (voluntario) {
         const necesidadPendienteId = await encontrarNecesidadPendiente(
           supabase,
-          voluntario.profesion
+          voluntario.profesion,
+          voluntario.pais
         );
         if (necesidadPendienteId) {
           await asignar(supabase, necesidadPendienteId, necesidad.voluntario_id);

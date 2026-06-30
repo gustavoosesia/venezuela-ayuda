@@ -25,7 +25,16 @@ const TIPOS_AYUDA = [
   "Otro",
 ];
 
-type ResultadoEnvio = { asignado: boolean; codigoSeguimiento: string } | null;
+type ResultadoEnvio = {
+  asignado: boolean;
+  codigoSeguimiento: string;
+  voluntario?: { nombre: string; telefono: string };
+} | null;
+
+function linkWhatsapp(telefono: string, mensaje: string): string {
+  const digitos = (telefono || "").replace(/[^\d]/g, "");
+  return `https://wa.me/${digitos}?text=${encodeURIComponent(mensaje)}`;
+}
 
 function NecesitoAyudaForm() {
   const searchParams = useSearchParams();
@@ -63,7 +72,7 @@ function NecesitoAyudaForm() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Error al registrar");
-      setResultado({ asignado: json.asignado, codigoSeguimiento: json.codigoSeguimiento });
+      setResultado({ asignado: json.asignado, codigoSeguimiento: json.codigoSeguimiento, voluntario: json.voluntario });
       setEnviado(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Error inesperado");
@@ -115,6 +124,19 @@ function NecesitoAyudaForm() {
                   Ya te asignamos un profesional disponible. Pronto te contactará directamente
                   por el teléfono que nos indicaste.
                 </p>
+                {resultado.voluntario && (
+                  <a
+                    href={linkWhatsapp(
+                      resultado.voluntario.telefono,
+                      `Hola ${resultado.voluntario.nombre}, soy ${form.nombre}. Me asignaron contigo en Venezuela Se Levanta para ${form.tipo_ayuda}.`
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-2 bg-[#25D366] hover:brightness-95 text-white text-sm font-semibold px-4 py-2.5 rounded-full transition-all"
+                  >
+                    📱 Escribirle por WhatsApp
+                  </a>
+                )}
               </div>
             ) : (
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-4 text-left">

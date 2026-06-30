@@ -68,7 +68,7 @@ export type Voluntario = {
   disponibilidad: string
   experiencia: string
   como_puede_ayudar: string
-  estado: 'disponible' | 'ocupado' | 'inactivo'
+  estado: 'pendiente_aprobacion' | 'disponible' | 'ocupado' | 'inactivo'
   created_at?: string
 }
 
