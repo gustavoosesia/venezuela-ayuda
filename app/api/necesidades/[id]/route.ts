@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { encontrarNecesidadPendiente, asignar } from "@/lib/matching";
+import { enviarEmailAsignacion, enviarEmailConfirmacionNecesidad } from "@/lib/email";
 
 // PATCH /api/necesidades/[id] → marcar como completado y liberar al voluntario
 export async function PATCH(
@@ -29,7 +30,7 @@ export async function PATCH(
       // Inmediatamente revisar si hay casos pendientes para ese voluntario
       const { data: voluntario } = await supabase
         .from("voluntarios")
-        .select("profesion")
+        .select("nombre, email, telefono, profesion, pais")
         .eq("id", necesidad.voluntario_id)
         .single();
 
@@ -40,6 +41,34 @@ export async function PATCH(
         );
         if (necesidadPendienteId) {
           await asignar(supabase, necesidadPendienteId, necesidad.voluntario_id);
+
+          const { data: necesidadPendiente } = await supabase
+            .from("necesidades")
+            .select("nombre, email, telefono, tipo_ayuda, descripcion, codigo_seguimiento")
+            .eq("id", necesidadPendienteId)
+            .single();
+
+          if (necesidadPendiente) {
+            await Promise.all([
+              enviarEmailAsignacion({
+                nombreNecesitado: necesidadPendiente.nombre,
+                emailNecesitado: necesidadPendiente.email,
+                telefonoNecesitado: necesidadPendiente.telefono,
+                tipoAyuda: necesidadPendiente.tipo_ayuda,
+                descripcion: necesidadPendiente.descripcion,
+                codigoSeguimiento: necesidadPendiente.codigo_seguimiento,
+                voluntario,
+              }),
+              enviarEmailConfirmacionNecesidad({
+                nombreNecesitado: necesidadPendiente.nombre,
+                emailNecesitado: necesidadPendiente.email,
+                tipoAyuda: necesidadPendiente.tipo_ayuda,
+                codigoSeguimiento: necesidadPendiente.codigo_seguimiento,
+                voluntario,
+                asignado: true,
+              }),
+            ]).catch(() => {});
+          }
         }
       }
     }

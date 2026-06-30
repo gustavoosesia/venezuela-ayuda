@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { encontrarMejorVoluntario, asignar } from "@/lib/matching";
+import { enviarEmailAsignacion, enviarEmailConfirmacionNecesidad } from "@/lib/email";
 
 // Reintenta asignar todos los casos que siguen pendientes
 export async function POST() {
@@ -8,7 +9,7 @@ export async function POST() {
 
   const { data: pendientes, error } = await supabase
     .from("necesidades")
-    .select("id, tipo_ayuda, urgencia")
+    .select("id, nombre, email, telefono, tipo_ayuda, descripcion, urgencia, codigo_seguimiento")
     .eq("estado", "pendiente")
     .order("created_at", { ascending: true });
 
@@ -29,6 +30,34 @@ export async function POST() {
     if (voluntarioId) {
       await asignar(supabase, necesidad.id, voluntarioId);
       asignados++;
+
+      const { data: voluntario } = await supabase
+        .from("voluntarios")
+        .select("nombre, email, telefono, profesion, pais")
+        .eq("id", voluntarioId)
+        .single();
+
+      if (voluntario) {
+        await Promise.all([
+          enviarEmailAsignacion({
+            nombreNecesitado: necesidad.nombre,
+            emailNecesitado: necesidad.email,
+            telefonoNecesitado: necesidad.telefono,
+            tipoAyuda: necesidad.tipo_ayuda,
+            descripcion: necesidad.descripcion,
+            codigoSeguimiento: necesidad.codigo_seguimiento,
+            voluntario,
+          }),
+          enviarEmailConfirmacionNecesidad({
+            nombreNecesitado: necesidad.nombre,
+            emailNecesitado: necesidad.email,
+            tipoAyuda: necesidad.tipo_ayuda,
+            codigoSeguimiento: necesidad.codigo_seguimiento,
+            voluntario,
+            asignado: true,
+          }),
+        ]).catch(() => {});
+      }
     } else {
       sinVoluntario++;
     }

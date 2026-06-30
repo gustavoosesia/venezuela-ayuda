@@ -40,8 +40,10 @@ export async function POST(req: NextRequest) {
     await Promise.all([
       enviarEmailAsignacion({
         nombreNecesitado: body.nombre,
+        emailNecesitado: body.email,
         telefonoNecesitado: body.telefono,
         tipoAyuda: body.tipo_ayuda,
+        descripcion: body.descripcion,
         codigoSeguimiento,
         voluntario: voluntario!,
       }),

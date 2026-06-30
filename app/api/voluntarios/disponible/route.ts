@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { encontrarNecesidadPendiente, asignar } from "@/lib/matching";
+import { enviarEmailAsignacion, enviarEmailConfirmacionNecesidad } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   const supabase = getSupabase();
@@ -10,7 +11,7 @@ export async function POST(req: NextRequest) {
 
   const { data: voluntarios, error } = await supabase
     .from("voluntarios")
-    .select("id, profesion, estado")
+    .select("id, nombre, email, telefono, profesion, pais, estado")
     .eq("email", email.toLowerCase().trim())
     .limit(1);
 
@@ -34,6 +35,35 @@ export async function POST(req: NextRequest) {
   const necesidadId = await encontrarNecesidadPendiente(supabase, voluntario.profesion);
   if (necesidadId) {
     await asignar(supabase, necesidadId, voluntario.id);
+
+    const { data: necesidad } = await supabase
+      .from("necesidades")
+      .select("nombre, email, telefono, tipo_ayuda, descripcion, codigo_seguimiento")
+      .eq("id", necesidadId)
+      .single();
+
+    if (necesidad) {
+      await Promise.all([
+        enviarEmailAsignacion({
+          nombreNecesitado: necesidad.nombre,
+          emailNecesitado: necesidad.email,
+          telefonoNecesitado: necesidad.telefono,
+          tipoAyuda: necesidad.tipo_ayuda,
+          descripcion: necesidad.descripcion,
+          codigoSeguimiento: necesidad.codigo_seguimiento,
+          voluntario,
+        }),
+        enviarEmailConfirmacionNecesidad({
+          nombreNecesitado: necesidad.nombre,
+          emailNecesitado: necesidad.email,
+          tipoAyuda: necesidad.tipo_ayuda,
+          codigoSeguimiento: necesidad.codigo_seguimiento,
+          voluntario,
+          asignado: true,
+        }),
+      ]).catch(() => {});
+    }
+
     return NextResponse.json({ mensaje: "Disponible y asignado a un caso pendiente", asignado: true });
   }
 

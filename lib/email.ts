@@ -24,14 +24,18 @@ const AVISO_SEGURIDAD = `
 
 export async function enviarEmailAsignacion({
   nombreNecesitado,
+  emailNecesitado,
   telefonoNecesitado,
   tipoAyuda,
+  descripcion,
   codigoSeguimiento,
   voluntario,
 }: {
   nombreNecesitado: string;
+  emailNecesitado?: string;
   telefonoNecesitado: string;
   tipoAyuda: string;
+  descripcion?: string;
   codigoSeguimiento: string;
   voluntario: {
     nombre: string;
@@ -62,7 +66,9 @@ export async function enviarEmailAsignacion({
             <p style="margin:0 0 8px;font-weight:600;color:#374151">Datos del necesitado:</p>
             <p style="margin:4px 0">👤 <strong>${nombreNecesitado}</strong></p>
             <p style="margin:4px 0">📞 ${telefonoNecesitado}</p>
+            ${emailNecesitado ? `<p style="margin:4px 0">✉️ ${emailNecesitado}</p>` : ""}
             <p style="margin:4px 0">🆘 Necesita: ${tipoAyuda}</p>
+            ${descripcion ? `<p style="margin:12px 0 0;padding-top:12px;border-top:1px solid #e5e7eb;color:#374151"><strong>Descripción de la situación:</strong><br/>${descripcion}</p>` : ""}
           </div>
           <p>Por favor, contáctale lo antes posible. Recuerda que tu ayuda es <strong>voluntaria y gratuita</strong>.</p>
           <p style="margin-top:24px;color:#6b7280;font-size:13px">
