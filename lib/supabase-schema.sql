@@ -69,3 +69,9 @@ ALTER TABLE voluntarios ADD COLUMN IF NOT EXISTS foto_url TEXT;
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('fotos-voluntarios', 'fotos-voluntarios', true)
 ON CONFLICT (id) DO NOTHING;
+
+-- El constraint original de "estado" no incluía 'pendiente_aprobacion'
+-- (quedó desactualizado cuando se agregó el flujo de aprobación de voluntarios)
+ALTER TABLE voluntarios DROP CONSTRAINT IF EXISTS voluntarios_estado_check;
+ALTER TABLE voluntarios ADD CONSTRAINT voluntarios_estado_check
+  CHECK (estado IN ('pendiente_aprobacion', 'disponible', 'ocupado', 'inactivo'));
